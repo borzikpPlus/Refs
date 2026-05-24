@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>MyFirstProject</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #eee;
+    }
+    .page {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      position: relative;
+      width: 700px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 25px 30px;
+    }
+    .code {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: #d9f0ee;
+      border: 1px solid #9ccac5;
+      padding: 2px 8px;
+      font-size: 13px;
+      color: #16635c;
+    }
+    .question {
+      color: #c0392b;
+      font-size: 18px;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    .option {
+      display: flex;
+      align-items: center;
+      margin: 10px 0;
+    }
+    .letter {
+      width: 26px;
+      height: 26px;
+      background: #f0f0f0;
+      border: 1px solid #aaa;
+      text-align: center;
+      line-height: 26px;
+      font-weight: bold;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+    .mark-title {
+      font-weight: bold;
+      margin-top: 25px;
+    }
+    .marks {
+      display: flex;
+      gap: 14px;
+      margin: 10px 0 20px;
+    }
+    .mark {
+      text-align: center;
+    }
+    .mark-label {
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .mark-box {
+      width: 34px;
+      height: 34px;
+      border: 1px solid #888;
+      line-height: 34px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #fff;
+    }
+    .mark-box.picked {
+      border-color: #2980b9;
+      background: #eaf3fb;
+    }
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-top: 10px;
+    }
+    .left-buttons button {
+      display: block;
+      margin-bottom: 10px;
+    }
+    button {
+      border: none;
+      color: #fff;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .green {
+      background: #18a999;
+    }
+    .red {
+      background: #e74c3c;
+    }
+    .gray {
+      background: #bdc3c7;
+      color: #333;
+    }
+    .explanation {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f7f7f7;
+      border-left: 3px solid #18a999;
+      font-size: 14px;
+    }
+    .progress {
+      text-align: center;
+      color: #888;
+      font-size: 13px;
+      margin-top: 15px;
+    }
+  </style>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef } = React;
+
+    const questions = [
+      {
+        code: '1.3.30',
+        question: 'Розпізнайте «земну адресу» України.',
+        options: [
+          { label: 'А', text: 'у Північній півкулі, на схід від Грінвіцького меридіана, у Європі' },
+          { label: 'Б', text: 'у Західній півкулі, у частині світу Євразія, на материку Європа' },
+          { label: 'В', text: 'на південь від екватора, у східній частині материка Євразія' },
+          { label: 'Г', text: 'на захід від Грінвіцького меридіана, на заході Європи' }
+        ],
+        correct: 'А',
+        explanation: 'Україна розташована в Північній півкулі, на схід від нульового меридіана, у Європі.'
+      },
+      {
+        code: '1.3.31',
+        question: 'Укажіть найвищу точку України.',
+        options: [
+          { label: 'А', text: 'гора Говерла' },
+          { label: 'Б', text: 'гора Роман-Кош' },
+          { label: 'В', text: 'гора Піп Іван' },
+          { label: 'Г', text: 'гора Ай-Петрі' }
+        ],
+        correct: 'А',
+        explanation: 'Говерла (2061 м) — найвища вершина Українських Карпат і усієї України.'
+      },
+      {
+        code: '1.3.32',
+        question: 'Яка річка є найдовшою в межах України?',
+        options: [
+          { label: 'А', text: 'Дунай' },
+          { label: 'Б', text: 'Дніпро' },
+          { label: 'В', text: 'Дністер' },
+          { label: 'Г', text: 'Південний Буг' }
+        ],
+        correct: 'Б',
+        explanation: 'Дніпро — найдовша річка, що протікає територією України.'
+      },
+      {
+        code: '1.3.33',
+        question: 'Укажіть столицю України.',
+        options: [
+          { label: 'А', text: 'Львів' },
+          { label: 'Б', text: 'Харків' },
+          { label: 'В', text: 'Київ' },
+          { label: 'Г', text: 'Одеса' }
+        ],
+        correct: 'В',
+        explanation: 'Столиця України — місто Київ.'
+      },
+      {
+        code: '1.3.34',
+        question: 'З якою країною Україна має найдовший сухопутний кордон?',
+        options: [
+          { label: 'А', text: 'Польща' },
+          { label: 'Б', text: 'Білорусь' },
+          { label: 'В', text: 'Румунія' },
+          { label: 'Г', text: 'Росія' }
+        ],
+        correct: 'Г',
+        explanation: 'Найдовший сухопутний кордон Україна має з Росією.'
+      },
+      {
+        code: '1.3.35',
+        question: 'Які моря омивають Україну на півдні?',
+        options: [
+          { label: 'А', text: 'Чорне та Азовське' },
+          { label: 'Б', text: 'Балтійське та Північне' },
+          { label: 'В', text: 'Каспійське та Аральське' },
+          { label: 'Г', text: 'Середземне та Мармурове' }
+        ],
+        correct: 'А',
+        explanation: 'На півдні Україну омивають Чорне та Азовське моря.'
+      }
+    ];
+
+    function Card({ question, number, total, onNext }) {
+      const [selected, setSelected] = useState(null);
+      const [checked, setChecked] = useState(false);
+      const [showExpl, setShowExpl] = useState(false);
+      const boxRefs = useRef({});
+
+      function pick(label) {
+        if (checked) return;
+        setSelected(label);
+      }
+
+      function showAnswer() {
+        question.options.forEach(opt => {
+          const el = boxRefs.current[opt.label];
+          if (!el) return;
+          if (opt.label === question.correct) {
+            el.style.background = '#b6e7b6';
+            el.style.borderColor = '#2e7d32';
+          } else if (opt.label === selected) {
+            el.style.background = '#f3b9b9';
+            el.style.borderColor = '#c62828';
+          }
+        });
+        setChecked(true);
+      }
+
+      function markFor(label) {
+        if (checked) {
+          if (label === question.correct) return '✓';
+          if (label === selected) return '✗';
+          return '';
+        }
+        return label === selected ? '•' : '';
+      }
+
+      return (
+        <div className="card">
+          <div className="code">Завдання {question.code}</div>
+
+          <div className="question">{question.question}</div>
+
+          {question.options.map(opt => (
+            <div className="option" key={opt.label}>
+              <div className="letter">{opt.label}</div>
+              <div>{opt.text}</div>
+            </div>
+          ))}
+
+          <div className="mark-title">Позначте відповіді:</div>
+          <div className="marks">
+            {question.options.map(opt => (
+              <div className="mark" key={opt.label}>
+                <div className="mark-label">{opt.label}</div>
+                <div
+                  className={'mark-box' + (selected === opt.label ? ' picked' : '')}
+                  ref={el => (boxRefs.current[opt.label] = el)}
+                  onClick={() => pick(opt.label)}
+                >
+                  {markFor(opt.label)}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="buttons">
+            <div className="left-buttons">
+              <button className="green" onClick={onNext}>Пропустити</button>
+              <button className="green" onClick={showAnswer}>Показати відповідь</button>
+              <button className="gray" onClick={() => setShowExpl(!showExpl)}>Читати пояснення</button>
+            </div>
+            <button className="red" onClick={onNext}>Продовжити пізніше</button>
+          </div>
+
+          {showExpl && <div className="explanation">{question.explanation}</div>}
+
+          <div className="progress">Питання {number} з {total}</div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [index, setIndex] = useState(0);
+
+      function next() {
+        setIndex((index + 1) % questions.length);
+      }
+
+      const q = questions[index];
+
+      return (
+        <div className="page">
+          <Card
+            key={q.code}
+            question={q}
+            number={index + 1}
+            total={questions.length}
+            onNext={next}
+          />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
